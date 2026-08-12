@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartStock - Estoque Inteligente</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+:root {
+    --verde-escuro: #079B5A;
+    --verde: #83C442;
+    --verde-hover: #057D49;
+    --verde-claro: #EAF6D9;
+    --vermelho: #D92735;
+    --vermelho-hover: #B91F2C;
+    --vermelho-claro: #FDE5E7;
+    --branco: #FFFFFF;
+    --fundo: #F5F7F2;
+    --cinza: #6c757d;
+    --cinza-claro: #f1f3f5;
+    --texto: #17202a;
+}
+
+body {
+    background: var(--fundo);
+    color: var(--texto);
+}
+
+header {
+    background: linear-gradient(135deg, var(--verde-escuro), var(--verde));
+    color: white;
+    padding: 18px 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 3px 10px rgba(7,155,90,.20);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 55px;
+    height: 55px;
+    background: white;
+    color: var(--verde-escuro);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.logo h1 {
+    font-size: 22px;
+}
+
+.logo span {
+    font-size: 12px;
+    opacity: .9;
+}
+
+.header-status {
+    background: rgba(255,255,255,.18);
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+nav {
+    background: white;
+    padding: 12px 35px;
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid #ddd;
+    overflow-x: auto;
+}
+
+nav button {
+    border: none;
+    background: transparent;
+    padding: 11px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #555;
+    transition: .2s;
+    white-space: nowrap;
+}
+
+nav button.active,
+nav button:hover {
+    background: var(--verde-claro);
+    color: var(--verde-escuro);
+}
+
+main {
+    max-width: 1250px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.title {
+    margin-bottom: 22px;
+}
+
+.title h2 {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.title p {
+    color: var(--cinza);
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.card .icon {
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+.card h3 {
+    font-size: 28px;
+    margin-bottom: 5px;
+    color: var(--verde-escuro);
+}
+
+.card p {
+    color: #777;
+    font-size: 14px;
+}
+
+.search-box {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    margin-bottom: 25px;
+}
+
+.search-box h3 {
+    margin-bottom: 15px;
+}
+
+.search {
+    display: flex;
+    gap: 10px;
+}
+
+.search input {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+}
+
+.search input:focus {
+    border-color: var(--verde);
+}
+
+.btn {
+    border: none;
+    padding: 13px 20px;
+    border-radius: 9px;
+    background: var(--verde-escuro);
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: .2s;
+}
+
+.btn:hover {
+    background: var(--verde-hover);
+    transform: translateY(-1px);
+}
+
+.btn.red {
+    background: var(--vermelho);
+}
+
+.btn.red:hover {
+    background: var(--vermelho-hover);
+}
+
+.btn.yellow {
+    background: var(--verde);
+}
+
+.btn.yellow:hover {
+    background: #6FAF32;
+}
+
+.btn.gray {
+    background: var(--cinza);
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.product {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    transition: .2s;
+}
+
+.product:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(7,155,90,.15);
+}
+
+.product-image {
+    height: 110px;
+    background: var(--cinza-claro);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.product h3 {
+    margin-bottom: 8px;
+}
+
+.price {
+    color: var(--verde-escuro);
+    font-weight: bold;
+    font-size: 19px;
+    margin-bottom: 12px;
+}
+
+.location {
+    color: #555;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.stock {
+    padding: 7px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.stock.green {
+    background: #DDF2C8;
+    color: #43851E;
+}
+
+.stock.yellow {
+    background: #EEF6D9;
+    color: #668F25;
+}
+
+.stock.red {
+    background: var(--vermelho-claro);
+    color: var(--vermelho);
+}
+
+.table-container {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    overflow-x: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    color: #666;
+    font-size: 13px;
+}
+
+td {
+    font-size: 14px;
+}
+
+.alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border-left: 5px solid var(--vermelho);
+    box-shadow: 0 2px 7px rgba(0,0,0,.05);
+}
+
+.alert.yellow-alert {
+    border-left-color: var(--verde);
+}
+
+.alert-info {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.alert-icon {
+    font-size: 28px;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.chart {
+    height: 300px;
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.bars {
+    height: 220px;
+    display: flex;
+    align-items: end;
+    justify-content: space-around;
+    border-bottom: 1px solid #ddd;
+    margin-top: 20px;
+}
+
+.bar-container {
+    height: 100%;
+    display: flex;
+    align-items: end;
+    gap: 5px;
+}
+
+.bar {
+    width: 25px;
+    background: var(--verde);
+    border-radius: 5px 5px 0 0;
+    transition: .2s;
+}
+
+.bar:hover {
+    background: var(--verde-escuro);
+}
+
+.bar-label {
+    font-size: 11px;
+    color: #777;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.prediction {
+    background: linear-gradient(135deg, #087A49, var(--verde-escuro));
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.prediction h3 {
+    margin-bottom: 15px;
+}
+
+.prediction .big {
+    font-size: 42px;
+    font-weight: bold;
+    color: #DDF2C8;
+    margin: 10px 0;
+}
+
+.prediction p {
+    color: #EAF6D9;
+    line-height: 1.5;
+}
+
+.ai-box {
+    margin-top: 25px;
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    border-top: 5px solid var(--verde);
+}
+
+.ai-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.ai-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    background: var(--verde-claro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+.ai-header h3 {
+    color: var(--verde-escuro);
+    margin-bottom: 4px;
+}
+
+.ai-header p {
+    color: #777;
+    font-size: 14px;
+}
+
+.ai-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.ai-report {
+    display: none;
+    background: #f8faf7;
+    border: 1px solid #dfe8d8;
+    border-radius: 12px;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+.ai-report.show {
+    display: block;
+}
+
+.ai-report h4 {
+    color: var(--verde-escuro);
+    margin-bottom: 12px;
+}
+
+.ai-report ul {
+    margin: 10px 0 10px 20px;
+}
+
+.ai-loading {
+    display: none;
+    color: var(--verde-escuro);
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.ai-loading.show {
+    display: block;
+}
+
+.map {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.aisles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.aisle {
+    height: 150px;
+    background: #E8ECE5;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 3px solid transparent;
+    transition: .2s;
+}
+
+.aisle.highlight {
+    border-color: var(--verde-escuro);
+    background: #DDF2C8;
+    box-shadow: 0 0 0 4px rgba(7,155,90,.10);
+}
+
+.aisle strong {
+    font-size: 20px;
+    color: var(--verde-escuro);
+}
+
+.aisle small {
+    color: #666;
+    margin-top: 7px;
+}
+
+@media(max-width: 900px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .products {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width: 600px) {
+    header {
+        padding: 15px;
+    }
+
+    nav {
+        padding: 10px;
+    }
+
+    main {
+        padding: 0 12px;
+    }
+
+    .cards,
+    .products,
+    .aisles {
+        grid-template-columns: 1fr;
+    }
+
+    .search {
+        flex-direction: column;
+    }
+
+    .header-status {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-icon">🛒</div>
+        <div>
+            <h1>SmartStock</h1>
+            <span>Estoque inteligente para supermercados</span>
+        </div>
+    </div>
+
+    <div class="header-status">
+        🟢 Sistema online
+    </div>
+</header>
+
+<nav>
+    <button class="active" onclick="showPage('consumidor', this)">🛒 Consumidor</button>
+    <button onclick="showPage('estoque', this)">📦 Estoque</button>
+    <button onclick="showPage('alertas', this)">⚠️ Alertas</button>
+    <button onclick="showPage('analytics', this)">📊 Analytics</button>
+    <button onclick="showPage('mapa', this)">🗺️ Mapa</button>
+</nav>
+
+<main>
+
+<section id="consumidor" class="page active">
+
+    <div class="title">
+        <h2>Encontre seu produto</h2>
+        <p>Consulte a disponibilidade e descubra em qual corredor está.</p>
+    </div>
+
+    <div class="search-box">
+        <h3>🔎 O que você está procurando?</h3>
+
+        <div class="search">
+            <input type="text" id="searchInput" placeholder="Ex.: leite, arroz, café..." onkeyup="searchProducts()">
+
+            <button class="btn" onclick="searchProducts()">
+                Pesquisar
+            </button>
+        </div>
+    </div>
+
+    <div id="consumerProducts" class="products"></div>
+
+</section>
+
+<section id="estoque" class="page">
+
+    <div class="title">
+        <h2>📦 Controle de Estoque</h2>
+        <p>Monitoramento dos produtos em tempo real.</p>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <div class="icon">📦</div>
+            <h3 id="totalProducts">0</h3>
+            <p>Produtos cadastrados</p>
+        </div>
+
+        <div class="card">
+            <div class="icon">🟢</div>
+            <h3 id="availableProducts">0</h3>
+            <p>Estoque normal</p>
+        </div>
+
+        <div class="card">
+            <div class="icon">🟡</div>
+            <h3 id="lowProducts">0</h3>
+            <p>Estoque baixo</p>
+        </div>
+
+        <div class="card">
+            <div class="icon">🔴</div>
+            <h3 id="criticalProducts">0</h3>
+            <p>Estoque crítico</p>
+        </div>
+
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Corredor</th>
+                    <th>Quantidade</th>
+                    <th>Mínimo</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody id="stockTable"></tbody>
+        </table>
+    </div>
+
+</section>
+
+<section id="alertas" class="page">
+
+    <div class="title">
+        <h2>⚠️ Alertas de Estoque</h2>
+        <p>Produtos que precisam de atenção da equipe.</p>
+    </div>
+
+    <div id="alertsContainer"></div>
+
+</section>
+
+<section id="analytics" class="page">
+
+    <div class="title">
+        <h2>📊 Analytics</h2>
+        <p>Dados para ajudar o supermercado a tomar decisões.</p>
+    </div>
+
+    <div class="analytics-grid">
+
+        <div class="chart">
+            <h3>📈 Saída de produtos</h3>
+
+            <div class="bars">
+
+                <div class="bar-container">
+                    <div>
+                        <div class="bar" style="height:80px"></div>
+                        <div class="bar-label">Seg</div>
+                    </div>
+                </div>
+
+                <div class="bar-container">
+                    <div>
+                        <div class="bar" style="height:120px"></div>
+                        <div class="bar-label">Ter</div>
+                    </div>
+                </div>
+
+                <div class="bar-container">
+                    <div>
+                        <div class="bar" style="height:160px"></div>
+                        <div class="bar-label">Qua</div>
+                    </div>
+                </div>
+
+                <div class="bar-container">
+                    <div>
+                        <div class="bar" style="height:130px"></div>
+                        <div class="bar-label">Qui</div>
+                    </div>
+                </div>
+
+                <div class="bar-container">
+                    <div>
+                        <div class="bar" style="height:190px"></div>
+                        <div class="bar-label">Sex</div>
+                    </div>
+                </div>
+
+                <div class="bar-container">
+                    <div>
+                        <div class="bar" style="height:150px"></div>
+                        <div class="bar-label">Sáb</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="prediction">
+            <h3>🤖 Previsão inteligente</h3>
+
+            <p>
+                Com base no histórico de vendas, o sistema
+                identificou uma tendência de aumento na saída
+                de produtos.
+            </p>
+
+            <div class="big">+23%</div>
+
+            <p>
+                previsão de demanda para esta semana.
+            </p>
+
+            <br>
+
+            <p>
+                💡 Recomendação: aumentar o estoque de
+                produtos de alta rotatividade antes do final
+                de semana.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="ai-box">
+
+        <div class="ai-header">
+            <div class="ai-icon">🤖</div>
+
+            <div>
+                <h3>Assistente de IA</h3>
+                <p>IA simulada para análise e geração automática de relatórios.</p>
+            </div>
+        </div>
+
+        <div class="ai-actions">
+
+            <button class="btn" onclick="generateReport()">
+                ✨ Gerar relatório com IA
+            </button>
+
+            <button class="btn gray" onclick="clearReport()">
+                Limpar relatório
+            </button>
+
+        </div>
+
+        <div id="aiLoading" class="ai-loading">
+            🤖 Analisando dados do estoque...
+        </div>
+
+        <div id="aiReport" class="ai-report"></div>
+
+    </div>
+
+</section>
+
+<section id="mapa" class="page">
+
+    <div class="title">
+        <h2>🗺️ Mapa do Supermercado</h2>
+        <p>Localize rapidamente o corredor do produto.</p>
+    </div>
+
+    <div class="map">
+
+        <h3 id="mapTitle">
+            Selecione um produto para localizar
+        </h3>
+
+        <div class="aisles">
+
+            <div class="aisle" id="aisle1">
+                <strong>01</strong>
+                <small>Massas</small>
+            </div>
+
+            <div class="aisle" id="aisle2">
+                <strong>02</strong>
+                <small>Café</small>
+            </div>
+
+            <div class="aisle" id="aisle3">
+                <strong>03</strong>
+                <small>Laticínios</small>
+            </div>
+
+            <div class="aisle" id="aisle4">
+                <strong>04</strong>
+                <small>Açúcar</small>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+<script>
+
+let products = [
+    {
+        id: 1,
+        name: "Leite Integral 1L",
+        category: "Laticínios",
+        price: 5.99,
+        stock: 24,
+        minimum: 10,
+        aisle: 3,
+        icon: "🥛"
+    },
+    {
+        id: 2,
+        name: "Arroz 5kg",
+        category: "Alimentos",
+        price: 24.90,
+        stock: 48,
+        minimum: 15,
+        aisle: 1,
+        icon: "🍚"
+    },
+    {
+        id: 3,
+        name: "Café 500g",
+        category: "Bebidas",
+        price: 18.90,
+        stock: 10,
+        minimum: 10,
+        aisle: 2,
+        icon: "☕"
+    },
+    {
+        id: 4,
+        name: "Açúcar 1kg",
+        category: "Alimentos",
+        price: 4.99,
+        stock: 3,
+        minimum: 10,
+        aisle: 4,
+        icon: "🍬"
+    },
+    {
+        id: 5,
+        name: "Macarrão 500g",
+        category: "Massas",
+        price: 4.49,
+        stock: 31,
+        minimum: 8,
+        aisle: 1,
+        icon: "🍝"
+    },
+    {
+        id: 6,
+        name: "Manteiga 200g",
+        category: "Laticínios",
+        price: 9.90,
+        stock: 7,
+        minimum: 10,
+        aisle: 3,
+        icon: "🧈"
+    }
+];
+
+function showPage(pageId, button) {
+
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+    });
+
+    document.getElementById(pageId).classList.add("active");
+
+    document.querySelectorAll("nav button").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    updateAll();
+}
+
+function getStatus(product) {
+
+    if (product.stock <= 0) {
+        return {
+            text: "ESGOTADO",
+            class: "red"
+        };
+    }
+
+    if (product.stock <= product.minimum) {
+        return {
+            text: "ESTOQUE BAIXO",
+            class: "yellow"
+        };
+    }
+
+    return {
+        text: "DISPONÍVEL",
+        class: "green"
+    };
+}
+
+function renderConsumerProducts(list = products) {
+
+    const container = document.getElementById("consumerProducts");
+
+    container.innerHTML = "";
+
+    if (list.length === 0) {
+
+        container.innerHTML = `
+            <div class="card">
+                <h3>Produto não encontrado</h3>
+                <p>Tente pesquisar por outro nome.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    list.forEach(product => {
+
+        const status = getStatus(product);
+
+        container.innerHTML += `
+            <div class="product">
+
+                <div class="product-image">
+                    ${product.icon}
+                </div>
+
+                <h3>${product.name}</h3>
+
+                <div class="price">
+                    R$ ${product.price.toFixed(2).replace(".", ",")}
+                </div>
+
+                <div class="location">
+                    📍 Corredor ${product.aisle}
+                </div>
+
+                <span class="stock ${status.class}">
+                    ${status.text}
+                </span>
+
+                <p style="margin-bottom:15px;color:#666;">
+                    ${
+                        product.stock > 0
+                        ? `${product.stock} unidades disponíveis`
+                        : "Produto indisponível"
+                    }
+                </p>
+
+                <button class="btn" onclick="locateProduct(${product.id})">
+                    🗺️ Ver localização
+                </button>
+
+            </div>
+        `;
+    });
+}
+
+function searchProducts() {
+
+    const search = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const filtered = products.filter(product =>
+        product.name.toLowerCase().includes(search) ||
+        product.category.toLowerCase().includes(search)
+    );
+
+    renderConsumerProducts(filtered);
+}
+
+function renderStock() {
+
+    const table = document.getElementById("stockTable");
+
+    table.innerHTML = "";
+
+    products.forEach(product => {
+
+        const status = getStatus(product);
+
+        table.innerHTML += `
+            <tr>
+
+                <td>
+                    <strong>${product.icon} ${product.name}</strong>
+                </td>
+
+                <td>
+                    Corredor ${product.aisle}
+                </td>
+
+                <td>
+                    <strong>${product.stock}</strong>
+                </td>
+
+                <td>
+                    ${product.minimum}
+                </td>
+
+                <td>
+                    <span class="stock ${status.class}">
+                        ${status.text}
+                    </span>
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn"
+                        onclick="removeProduct(${product.id})"
+                        style="padding:8px 12px"
+                    >
+                        −
+                    </button>
+
+                    <button
+                        class="btn"
+                        onclick="addProduct(${product.id})"
+                        style="padding:8px 12px"
+                    >
+                        +
+                    </button>
+
+                </td>
+
+            </tr>
+        `;
+    });
+}
+
+function addProduct(id) {
+
+    const product = products.find(p => p.id === id);
+
+    if (product) {
+        product.stock++;
+    }
+
+    updateAll();
+}
+
+function removeProduct(id) {
+
+    const product = products.find(p => p.id === id);
+
+    if (product && product.stock > 0) {
+        product.stock--;
+    }
+
+    updateAll();
+}
+
+function renderAlerts() {
+
+    const container = document.getElementById("alertsContainer");
+
+    container.innerHTML = "";
+
+    const alerts = products.filter(product =>
+        product.stock <= product.minimum
+    );
+
+    if (alerts.length === 0) {
+
+        container.innerHTML = `
+            <div class="card">
+                <h3>✅ Tudo certo!</h3>
+                <p>Nenhum produto está abaixo do estoque mínimo.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    alerts.forEach(product => {
+
+        const critical = product.stock < product.minimum;
+
+        container.innerHTML += `
+            <div class="alert ${critical ? "" : "yellow-alert"}">
+
+                <div class="alert-info">
+
+                    <div class="alert-icon">
+                        ${critical ? "🔴" : "🟡"}
+                    </div>
+
+                    <div>
+
+                        <strong>${product.name}</strong>
+
+                        <p style="margin-top:5px;color:#666;">
+                            Corredor ${product.aisle} ·
+                            ${product.stock} unidades disponíveis
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="btn ${critical ? "red" : "yellow"}"
+                    onclick="addProduct(${product.id})"
+                >
+                    + Repor
+                </button>
+
+            </div>
+        `;
+    });
+}
+
+function updateDashboard() {
+
+    const total = products.length;
+
+    const available = products.filter(p =>
+        p.stock > p.minimum
+    ).length;
+
+    const low = products.filter(p =>
+        p.stock === p.minimum
+    ).length;
+
+    const critical = products.filter(p =>
+        p.stock < p.minimum
+    ).length;
+
+    document.getElementById("totalProducts").textContent = total;
+    document.getElementById("availableProducts").textContent = available;
+    document.getElementById("lowProducts").textContent = low;
+    document.getElementById("criticalProducts").textContent = critical;
+}
+
+function locateProduct(id) {
+
+    const product = products.find(p => p.id === id);
+
+    if (!product) return;
+
+    document.querySelectorAll(".aisle").forEach(aisle => {
+        aisle.classList.remove("highlight");
+    });
+
+    const aisle = document.getElementById("aisle" + product.aisle);
+
+    if (aisle) {
+        aisle.classList.add("highlight");
+    }
+
+    document.getElementById("mapTitle").innerHTML =
+        `📍 <strong>${product.name}</strong> está no <strong>Corredor ${product.aisle}</strong>`;
+
+    showPage(
+        "mapa",
+        document.querySelectorAll("nav button")[4]
+    );
+}
+
+function generateReport() {
+
+    const loading = document.getElementById("aiLoading");
+    const report = document.getElementById("aiReport");
+
+    report.classList.remove("show");
+    loading.classList.add("show");
+
+    setTimeout(() => {
+
+        const total = products.length;
+
+        const available = products.filter(p =>
+            p.stock > p.minimum
+        );
+
+        const low = products.filter(p =>
+            p.stock === p.minimum
+        );
+
+        const critical = products.filter(p =>
+            p.stock < p.minimum
+        );
+
+        const totalUnits = products.reduce(
+            (sum, product) => sum + product.stock,
+            0
+        );
+
+        const criticalNames = critical.length
+            ? critical.map(p => `${p.icon} ${p.name}`).join(", ")
+            : "Nenhum produto em situação crítica.";
+
+        const lowNames = low.length
+            ? low.map(p => `${p.icon} ${p.name}`).join(", ")
+            : "Nenhum produto exatamente no estoque mínimo.";
+
+        const highestStock = [...products].sort(
+            (a, b) => b.stock - a.stock
+        )[0];
+
+        const attentionProducts = products.filter(
+            p => p.stock <= p.minimum
+        );
+
+        const percentageAttention =
+            Math.round((attentionProducts.length / total) * 100);
+
+        loading.classList.remove("show");
+
+        report.innerHTML = `
+            <h4>📄 Relatório gerado pela IA</h4>
+
+            <p>
+                <strong>Resumo:</strong>
+                Foram analisados ${total} produtos e
+                ${totalUnits} unidades disponíveis atualmente.
+            </p>
+
+            <br>
+
+            <p>
+                <strong>📊 Situação do estoque:</strong>
+            </p>
+
+            <ul>
+                <li>${available.length} produtos com estoque normal.</li>
+                <li>${low.length} produtos no limite mínimo.</li>
+                <li>${critical.length} produtos abaixo do mínimo.</li>
+                <li>${percentageAttention}% dos produtos precisam de atenção.</li>
+            </ul>
+
+            <p>
+                <strong>🔴 Produtos críticos:</strong>
+                ${criticalNames}
+            </p>
+
+            <p style="margin-top:8px;">
+                <strong>🟡 Produtos no limite:</strong>
+                ${lowNames}
+            </p>
+
+            <br>
+
+            <p>
+                <strong>📦 Maior estoque:</strong>
+                ${highestStock.icon} ${highestStock.name}
+                possui ${highestStock.stock} unidades.
+            </p>
+
+            <br>
+
+            <p>
+                <strong>🤖 Recomendação da IA:</strong>
+                priorizar a reposição dos produtos abaixo do
+                estoque mínimo, acompanhar a saída dos produtos
+                de maior rotatividade e revisar os níveis mínimos
+                de estoque com base no histórico de vendas.
+            </p>
+
+            <br>
+
+            <p style="color:#777;font-size:12px;">
+                Relatório demonstrativo. A IA apresentada nesta
+                versão é uma simulação para ilustrar uma possível
+                integração futura com um sistema de inteligência artificial.
+            </p>
+        `;
+
+        report.classList.add("show");
+
+    }, 1500);
+}
+
+function clearReport() {
+
+    document.getElementById("aiReport").innerHTML = "";
+
+    document.getElementById("aiReport")
+        .classList.remove("show");
+}
+
+function updateAll() {
+
+    renderConsumerProducts();
+    renderStock();
+    renderAlerts();
+    updateDashboard();
+}
+
+updateAll();
+
+</script>
+
+</body>
+</html>
